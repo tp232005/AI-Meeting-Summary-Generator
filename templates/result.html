@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ data.title }} — MeetingSummarizer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <header class="site-header">
+    <a href="/" class="logo">
+      <span class="logo-icon">▣</span>
+      <span class="logo-text">MeetingSummarizer</span>
+    </a>
+    <nav class="header-meta">
+      <a href="/" class="back-link">← New summary</a>
+    </nav>
+  </header>
+
+  <main class="result-main">
+
+    <div class="result-hero">
+      <h1 class="result-title">{{ data.title }}</h1>
+      <div class="result-pills">
+        <span class="pill pill-accent">{{ data.length }} summary</span>
+        <span class="pill">{{ data.word_count }} words in</span>
+        <span class="pill">{{ data.created_at }}</span>
+      </div>
+    </div>
+
+    <div class="result-grid">
+
+      <!-- Summary -->
+      <div class="card result-card span-2">
+        <h2 class="section-title"><span class="icon-label">◈</span> Summary</h2>
+        <p class="summary-body">{{ data.summary }}</p>
+      </div>
+
+      <!-- Key highlights -->
+      <div class="card result-card">
+        <h2 class="section-title"><span class="icon-label">◉</span> Key Highlights</h2>
+        {% if data.bullets %}
+          <ul class="bullet-list">
+            {% for b in data.bullets %}
+            <li>{{ b }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="empty-state">None detected.</p>
+        {% endif %}
+      </div>
+
+      <!-- Keywords -->
+      <div class="card result-card">
+        <h2 class="section-title"><span class="icon-label">◆</span> Keywords</h2>
+        <div class="keyword-cloud">
+          {% for k in data.keywords %}
+            <span class="keyword-tag">{{ k }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Action items -->
+      <div class="card result-card span-2">
+        <h2 class="section-title"><span class="icon-label">▶</span> Action Items</h2>
+        {% if data.actions %}
+          <div class="action-list">
+            {% for a in data.actions %}
+            <div class="action-item">
+              <div class="action-owner">{{ a.owner }}</div>
+              <div class="action-text">{{ a.action }}</div>
+              {% if a.deadline %}
+              <div class="action-deadline">📅 {{ a.deadline }}</div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty-state">No action items detected in this transcript.</p>
+        {% endif %}
+      </div>
+
+      <!-- Decisions -->
+      <div class="card result-card span-2">
+        <h2 class="section-title"><span class="icon-label">✓</span> Decisions Made</h2>
+        {% if data.decisions %}
+          <ul class="decision-list">
+            {% for d in data.decisions %}
+            <li>{{ d }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="empty-state">No clear decisions detected.</p>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <!-- Delete -->
+    <div class="result-footer">
+      <form method="POST" action="/delete/{{ data.id }}" onsubmit="return confirm('Delete this summary?')">
+        <button type="submit" class="btn-delete">Delete summary</button>
+      </form>
+    </div>
+
+  </main>
+</body>
+</html>
